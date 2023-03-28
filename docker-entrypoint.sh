@@ -57,6 +57,7 @@ renew_port() {
 
 # Wrap all of this up
 main() {
+  echo "$(timestamp) | Starting port forwarding script"
   pre_reqs
   # Port forwarding rules expire after 60 seconds, so try to renew every 30 seconds
   while true; do
@@ -65,3 +66,4 @@ main() {
   done
 }
 
+main
