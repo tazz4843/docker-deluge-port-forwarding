@@ -67,10 +67,11 @@ get_port() {
     # Gateway may be randomly assigned, so we need to try to get it every time
   for i in {1..32} ; do
     # natpmpc does not return a non-zero exit code on failure, so we need to check the output
-    # if it contains "Mapped public port", we can assume it worked
+    # if it does not contain "FAILED", then we can assume it worked
     vpn_gateway="10.{$i}.0.1"
-    natpmpc -g "${vpn_gateway}" -a 0 0 udp 60 | grep "Mapped public port" && break
+    natpmpc -g "${vpn_gateway}" -a 0 0 udp 60 2>&1 | grep -q "FAILED" || break
   done
+  echo "$(timestamp) | VPN gateway: ${vpn_gateway}"
   natpmpc -g "${vpn_gateway}" -a 0 0 tcp 60
 }
 
