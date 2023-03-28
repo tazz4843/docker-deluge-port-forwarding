@@ -40,12 +40,13 @@ delete_rules() {
 
 # Renew or create the port forwarding rule, and set the active_port variable
 renew_port() {
-  natpmpc -g "${VPN_GATEWAY}" -a 0 0 udp 60 | grep "public port" | awk '{print $4}' > /tmp/active_port || {
+  # Renew the port
+  natpmpc -g "${vpn_gateway}" -a 0 0 udp 60 | grep "public port" | awk '{print $4}' > /tmp/active_port || {
     echo "$(timestamp) | Failed to renew port, trying again next round"
     return 1
   }
   # A TCP port assignment will assign the same port as UDP, so we can just use the same file
-  natpmpc -g "${VPN_GATEWAY}" -a 0 0 tcp 60
+  natpmpc -g "${vpn_gateway}" -a 0 0 tcp 60
 
   active_port=$(cat /tmp/active_port)
   configured_port=$(cat /pia/forwarded_port 2>/dev/null || echo "0")
@@ -61,10 +62,23 @@ renew_port() {
   fi
 }
 
+# Get the port for the first time
+get_port() {
+    # Gateway may be randomly assigned, so we need to try to get it every time
+  for i in {1..32} ; do
+    # natpmpc does not return a non-zero exit code on failure, so we need to check the output
+    # if it contains "Mapped public port", we can assume it worked
+    vpn_gateway="10.{$i}.0.1"
+    natpmpc -g "${vpn_gateway}" -a 0 0 udp 60 | grep "Mapped public port" && break
+  done
+  natpmpc -g "${vpn_gateway}" -a 0 0 tcp 60
+}
+
 # Wrap all of this up
 main() {
   echo "$(timestamp) | Starting port forwarding script"
   pre_reqs
+  get_port
   # Port forwarding rules expire after 60 seconds, so try to renew every 30 seconds
   while true; do
     renew_port
