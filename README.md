@@ -6,8 +6,7 @@
 3) Add this container to your docker-compose.yml, and expose `/pia/forwarded_port` to this container
 4) Set env var `VPN_CT_NAME` to the name of your ProtonVPN container
 5) Set env var `VPN_IF_NAME` to the name of your ProtonVPN interface (usually `tun0`)
-6) Set env var `VPN_GATEWAY` to the IP address of your `gluetun` container's gateway for the VPN. This is usually the endpoint itself.
-7) Start up your containers
+6) Start up your containers
 
 ## Troubleshooting
 Check the logs for this container: `docker logs -f <container name>`
