@@ -40,12 +40,12 @@ delete_rules() {
 
 # Renew or create the port forwarding rule, and set the active_port variable
 renew_port() {
-  natpmpc -a 0 0 udp 60 | grep "public port" | awk '{print $4}' > /tmp/active_port || {
+  natpmpc -g "${VPN_GATEWAY}" -a 0 0 udp 60 | grep "public port" | awk '{print $4}' > /tmp/active_port || {
     echo "$(timestamp) | Failed to renew port, trying again next round"
     return 1
   }
   # A TCP port assignment will assign the same port as UDP, so we can just use the same file
-  natpmpc -a 0 0 tcp 60
+  natpmpc -g "${VPN_GATEWAY}" -a 0 0 tcp 60
 
   active_port=$(cat /tmp/active_port)
   configured_port=$(cat /pia/forwarded_port 2>/dev/null || echo "0")
