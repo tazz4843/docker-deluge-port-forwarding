@@ -49,6 +49,7 @@ renew_port() {
 
   active_port=$(cat /tmp/active_port)
   configured_port=$(cat /pia/forwarded_port 2>/dev/null || echo "0")
+  echo "$(timestamp) | Active port: ${active_port}, Configured port: ${configured_port}"
 
   if [ "${active_port}" != "${configured_port}" ]; then
     echo "${active_port}" > /pia/forwarded_port
