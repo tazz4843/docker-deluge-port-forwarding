@@ -65,12 +65,16 @@ renew_port() {
 # Get the port for the first time
 get_port() {
     # Gateway may be randomly assigned, so we need to try to get it every time
-  for i in {1..32} ; do
+  for i in {0..256} ; do
     # natpmpc does not return a non-zero exit code on failure, so we need to check the output
     # if it does not contain "FAILED", then we can assume it worked
-    vpn_gateway="10.{$i}.0.1"
+    vpn_gateway="10.$i.0.1"
     natpmpc -g "${vpn_gateway}" -a 0 0 udp 60 2>&1 | grep -q "FAILED" || break
   done
+  if [ "${i}" -eq 256 ]; then
+    echo "$(timestamp) | Failed to get VPN gateway"
+    exit 3
+  fi
   echo "$(timestamp) | VPN gateway: ${vpn_gateway}"
   natpmpc -g "${vpn_gateway}" -a 0 0 tcp 60
 }
