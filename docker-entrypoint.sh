@@ -77,6 +77,9 @@ get_port() {
   fi
   echo "$(timestamp) | VPN gateway: ${vpn_gateway}"
   natpmpc -g "${vpn_gateway}" -a 0 0 tcp 60
+
+  # clear old port
+  echo 65535 > /pia/forwarded_port
 }
 
 # Wrap all of this up
