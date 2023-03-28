@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# timestamp function
+timestamp() {
+  date "+%D %T"
+}
+
 pre_reqs() {
   while read -r var; do
     [ -z "${!var}" ] && { echo "$(timestamp) | ${var} is empty or not set."; exit 1; }
