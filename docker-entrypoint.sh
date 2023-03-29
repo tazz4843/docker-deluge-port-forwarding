@@ -50,6 +50,10 @@ renew_port() {
 
   active_port=$(cat /tmp/active_port)
   configured_port=$(cat /pia/forwarded_port 2>/dev/null || echo "0")
+  # if empty strings, something went very wrong
+  [ -z "${active_port}" ] && { echo "$(timestamp) | Active port is empty"; exit 4; }
+  [ -z "${configured_port}" ] && { echo "$(timestamp) | Configured port is empty"; exit 5; }
+
   echo "$(timestamp) | Active port: ${active_port}, Configured port: ${configured_port}"
 
   if [ "${active_port}" != "${configured_port}" ]; then
