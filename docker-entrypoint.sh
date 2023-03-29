@@ -78,6 +78,7 @@ get_port() {
     if timeout 60 bash -c "${cmd}"; then
       break
     fi
+    echo "$(timestamp) | Failed to get VPN gateway, trying again"
   done
   if [ "${i}" -eq 256 ]; then
     echo "$(timestamp) | Failed to get VPN gateway"
