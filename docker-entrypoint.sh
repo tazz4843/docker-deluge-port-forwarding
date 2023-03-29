@@ -72,10 +72,10 @@ get_port() {
   for i in {0..256} ; do
     vpn_gateway="10.$i.0.1"
     # natpmpc does not return a non-zero exit code on failure, so we need to check the output
-    # if it does not contain "FAILED", then we can assume it worked
+    # if it contains the string "Public IP address" then it succeeded
     # it may also take forever to get a gateway randomly, so we need to timeout after 60 seconds
-    cmd="natpmpc -g ${vpn_gateway} -a 0 0 udp 60 2>&1 | grep -q \"FAILED\""
-    if ! timeout 60 bash -c "${cmd}"; then
+    cmd="natpmpc -g ${vpn_gateway} 2>&1 | grep -q 'Public IP address'"
+    if timeout 60 bash -c "${cmd}"; then
       break
     fi
   done
@@ -84,7 +84,6 @@ get_port() {
     exit 3
   fi
   echo "$(timestamp) | VPN gateway: ${vpn_gateway}"
-  natpmpc -g "${vpn_gateway}" -a 0 0 tcp 60
 
   # clear old port
   echo 65535 > /pia/forwarded_port
